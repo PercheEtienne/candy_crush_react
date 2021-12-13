@@ -6,6 +6,7 @@ import purpleCandy from './images/purple-candy.png'
 import redCandy from './images/red-candy.png'
 import yellowCandy from './images/yellow-candy.png'
 import blank from './images/blank.png'
+import ScoreBoard from "./components/ScoreBoard";
 
 const width = 8;
 const candiesColors = [blueCandy, greenCandy, orangeCandy, purpleCandy, redCandy, yellowCandy, blank]
@@ -14,10 +15,10 @@ const candiesColors = [blueCandy, greenCandy, orangeCandy, purpleCandy, redCandy
 function App() {
 
     const [gameBoard, setGameBoard] = useState([])
-    const [nextGameBoard, setNextGameBoard] = useState([])
     const [candyBeingDragged, setCandyBeingDragged] = useState(null)
     const [candyBeingReplaced, setCandyBeingReplaced] = useState(null)
-    let [currentScore, setCurrentScore] = useState(0)
+    const [currentScore, setCurrentScore] = useState(0)
+    const [gameStarted, setGameStarted] = useState(false)
 
     const createGameBoard = () => {
         let randomColors = []
@@ -25,34 +26,44 @@ function App() {
             randomColors.push(candiesColors[Math.floor(Math.random() * candiesColors.length)])
         }
         setGameBoard(randomColors)
-        setNextGameBoard(randomColors)
     }
 
     const checkFor3inColumn = () => {
+        let valid = false
         for (let i = 0; i < (width * width) - (2 * width); i++) {
             const conlumOf3 = [i, i + width, i + 2 * width]
             const currentColor = gameBoard[i]
 
-            if (conlumOf3.every(i => gameBoard[i] === currentColor)) {
+            if (conlumOf3.every(i => gameBoard[i] === currentColor) && gameBoard[i] !== blank) {
                 conlumOf3.forEach(i => gameBoard[i] = blank)
-                return true
+                valid = true
             }
         }
+        if (valid && gameStarted) {
+            setCurrentScore((score) => score + 3)
+        }
+        return valid
     }
 
     const checkFor4inColumn = () => {
+        let valid = false;
         for (let i = 0; i < (width * width) - (2 * width); i++) {
             const conlumOf4 = [i, i + width, i + 2 * width, i + 3 * width]
             const currentColor = gameBoard[i]
 
-            if (conlumOf4.every(i => gameBoard[i] === currentColor)) {
+            if (conlumOf4.every(i => gameBoard[i] === currentColor) && gameBoard[i] !== blank) {
                 conlumOf4.forEach(i => gameBoard[i] = blank)
-                return true
+                valid = true
             }
         }
+        if (valid && gameStarted) {
+            setCurrentScore((score) => score + 4)
+        }
+        return valid
     }
 
     const checkFor3inRow = () => {
+        let valid = false
         const notValidIndex = []
         for (let i = 0; i < (width * width); i++) {
             const rowOf3 = [i, i + 1, i + 2]
@@ -62,14 +73,19 @@ function App() {
                     notValidIndex.push(j)
                 }
             }
-            if (rowOf3.every(i => gameBoard[i] === currentColor) && !notValidIndex.includes(i)) {
+            if (rowOf3.every(i => gameBoard[i] === currentColor) && !notValidIndex.includes(i) && gameBoard[i] !== blank) {
                 rowOf3.forEach(i => gameBoard[i] = blank)
-                return true
+                valid = true
             }
         }
+        if (valid && gameStarted) {
+            setCurrentScore((score) => score + 3)
+        }
+        return valid
     }
 
     const checkFor4inRow = () => {
+        let valid = false
         const notValidIndex = []
         for (let i = 0; i < (width * width); i++) {
             const rowOf4 = [i, i + 1, i + 2, i + 3]
@@ -79,11 +95,15 @@ function App() {
                     notValidIndex.push(j)
                 }
             }
-            if (rowOf4.every(i => gameBoard[i] === currentColor) && !notValidIndex.includes(i)) {
+            if (rowOf4.every(i => gameBoard[i] === currentColor) && !notValidIndex.includes(i) && gameBoard[i] !== blank) {
                 rowOf4.forEach(i => gameBoard[i] = blank)
-                return true
+                valid = true
             }
         }
+        if (valid && gameStarted) {
+            setCurrentScore((score) => score + 4)
+        }
+        return valid
     }
 
     const moveIntoSquareBelow = () => {
@@ -108,46 +128,47 @@ function App() {
     }
 
     const dragStart = (e) => {
-        //console.log(e.target)
-        console.log("drag start")
         setCandyBeingDragged(e.target)
+        setGameStarted(() => true)
     }
 
     const dragDrop = (e) => {
-        //console.log(e.target)
-        console.log("drag drop")
         setCandyBeingReplaced(e.target)
+        console.log(gameStarted)
     }
 
 
     const dragEnd = (e) => {
-        //console.log(e.target)
-        console.log("drag end")
         const idCandyBeingDragged = parseInt(candyBeingDragged.getAttribute('data-id'))
         const idCandyBeingReplaced = parseInt(candyBeingReplaced.getAttribute('data-id'))
 
-        gameBoard[idCandyBeingReplaced] = candyBeingDragged.getAttribute('src')
-        gameBoard[idCandyBeingDragged] = candyBeingReplaced.getAttribute('src')
-
         if ((idCandyBeingReplaced === idCandyBeingDragged + 1
-                || idCandyBeingReplaced === idCandyBeingDragged - 1
-                || idCandyBeingReplaced === idCandyBeingDragged + width
-                || idCandyBeingReplaced === idCandyBeingDragged - width)
-            && (checkFor4inColumn() || checkFor3inColumn() || checkFor4inRow() || checkFor3inRow())
-        ) {
-            console.log("Unauthorized drag")
+            || idCandyBeingReplaced === idCandyBeingDragged - 1
+            || idCandyBeingReplaced === idCandyBeingDragged + width
+            || idCandyBeingReplaced === idCandyBeingDragged - width)) {
+            gameBoard[idCandyBeingReplaced] = candyBeingDragged.getAttribute('src')
+            gameBoard[idCandyBeingDragged] = candyBeingReplaced.getAttribute('src')
+        }
+
+        const isC4 = checkFor4inColumn()
+        const isR4 = checkFor4inRow()
+        const isC3 = checkFor3inColumn()
+        const isR3 = checkFor3inRow()
+
+        if ((isC4 || isR4 || isC3 || isR3)) {
             setCandyBeingReplaced(null)
             setCandyBeingDragged(null)
         } else {
+            console.log("Unauthorized drag")
+
             gameBoard[idCandyBeingReplaced] = candyBeingReplaced.getAttribute('src')
             gameBoard[idCandyBeingDragged] = candyBeingDragged.getAttribute('src')
+
         }
-        //console.log(currentScore)
+        console.log(currentScore)
     }
     //TODO : vérifier pour les extrèmes
-
     //TODO : plusieurs lignes ou colonnes en même temps
-
 
     useEffect(() => {
         createGameBoard()
@@ -161,9 +182,9 @@ function App() {
             checkFor3inColumn()
             moveIntoSquareBelow()
             setGameBoard([...gameBoard])
-        }, 100)
+        }, 50)
         return () => clearInterval(timer)
-    }, [checkFor4inRow, checkFor4inColumn, checkFor3inRow, , checkFor3inColumn, moveIntoSquareBelow, gameBoard])
+    }, [checkFor4inRow, checkFor4inColumn, checkFor3inRow, checkFor3inColumn, moveIntoSquareBelow, gameBoard])
 
     return (
         <div className="app">
@@ -173,6 +194,7 @@ function App() {
                         key={index}
                         src={candiesColors}
                         alt={candiesColors}
+                        style={{backgroundColor: 'lightgrey', border: '1px solid black'}}
                         data-id={index}
                         draggable={true}
                         onDragStart={dragStart}
@@ -184,6 +206,7 @@ function App() {
                     />
                 ))}
             </div>
+            <ScoreBoard score={currentScore}/>
         </div>
     );
 }
