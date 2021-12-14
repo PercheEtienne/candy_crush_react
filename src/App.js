@@ -7,6 +7,7 @@ import redCandy from './images/red-candy.png'
 import yellowCandy from './images/yellow-candy.png'
 import blank from './images/blank.png'
 import ScoreBoard from "./components/ScoreBoard";
+import LevelSelector from "./components/LevelSelector";
 
 const width = 8;
 const candiesColors = [blueCandy, greenCandy, orangeCandy, purpleCandy, redCandy, yellowCandy, blank]
@@ -138,7 +139,7 @@ function App() {
     }
 
 
-    const dragEnd = (e) => {
+    const dragEnd = () => {
         const idCandyBeingDragged = parseInt(candyBeingDragged.getAttribute('data-id'))
         const idCandyBeingReplaced = parseInt(candyBeingReplaced.getAttribute('data-id'))
 
@@ -188,6 +189,7 @@ function App() {
 
     return (
         <div className="app">
+            <LevelSelector/>
             <div className="game">
                 {gameBoard.map((candiesColors, index) => (
                     <img
