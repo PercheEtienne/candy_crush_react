@@ -1,20 +1,38 @@
 import React from 'react'
 import Select from 'react-select'
 
-function LevelSelector() {
-
-    const options = [
-        {value: 'chocolate', label: 'Chocolate'},
-        {value: 'strawberry', label: 'Strawberry'},
-        {value: 'vanilla', label: 'Vanilla'}
-    ]
+const options = [
+    {value: 10, label: 'Facile'},
+    {value: 8, label: 'Normal'},
+    {value: 6, label: 'Difficile'}
+]
 
 
+class LevelSelector extends React.Component {
+    state = {
+        selectedOption: options[1],
+    };
+    handleChange = (selectedOption) => {
+        this.setState({selectedOption});
+        console.log(`Option selected:`, selectedOption);
 
-    return ( <div>
-        <Select options={options} style={{}} />
-        <br/>
-    </div>);
+    };
+
+    render() {
+        const {selectedOption} = this.state;
+
+        return (
+            <Select
+                value={selectedOption}
+                onChange={this.handleChange}
+                options={options}
+            />
+        );
+    }
 }
 
-export default LevelSelector
+function Selector() {
+    return (<LevelSelector/>)
+}
+
+export default Selector;

@@ -8,13 +8,14 @@ import yellowCandy from './images/yellow-candy.png'
 import blank from './images/blank.png'
 import ScoreBoard from "./components/ScoreBoard";
 import LevelSelector from "./components/LevelSelector";
+import Footer from "./components/Footer";
 
-const width = 8;
+
 const candiesColors = [blueCandy, greenCandy, orangeCandy, purpleCandy, redCandy, yellowCandy, blank]
 
 
 function App() {
-
+    const [width,setWidth] = useState(8);
     const [gameBoard, setGameBoard] = useState([])
     const [candyBeingDragged, setCandyBeingDragged] = useState(null)
     const [candyBeingReplaced, setCandyBeingReplaced] = useState(null)
@@ -187,28 +188,30 @@ function App() {
         return () => clearInterval(timer)
     }, [checkFor4inRow, checkFor4inColumn, checkFor3inRow, checkFor3inColumn, moveIntoSquareBelow, gameBoard])
 
-    return (
-        <div className="app">
-            <LevelSelector/>
-            <div className="game">
-                {gameBoard.map((candiesColors, index) => (
-                    <img
-                        key={index}
-                        src={candiesColors}
-                        alt={candiesColors}
-                        style={{backgroundColor: 'lightgrey', border: '1px solid black'}}
-                        data-id={index}
-                        draggable={true}
-                        onDragStart={dragStart}
-                        onDragOver={(event => event.preventDefault())}
-                        onDragEnter={(event => event.preventDefault())}
-                        onDragLeave={(event => event.preventDefault())}
-                        onDrop={dragDrop}
-                        onDragEnd={dragEnd}
-                    />
-                ))}
+    return (<div id="container">
+            <div className="app">
+                <LevelSelector/>
+                <ScoreBoard score={currentScore}/>
+                <div className="game">
+                    {gameBoard.map((candiesColors, index) => (
+                        <img
+                            key={index}
+                            src={candiesColors}
+                            alt={candiesColors}
+                            style={{background: 'rgba(158, 158, 158, 0.7)', border: '1px solid black'}}
+                            data-id={index}
+                            draggable={true}
+                            onDragStart={dragStart}
+                            onDragOver={(event => event.preventDefault())}
+                            onDragEnter={(event => event.preventDefault())}
+                            onDragLeave={(event => event.preventDefault())}
+                            onDrop={dragDrop}
+                            onDragEnd={dragEnd}
+                        />
+                    ))}
+                </div>
+                <Footer/>
             </div>
-            <ScoreBoard score={currentScore}/>
         </div>
     );
 }

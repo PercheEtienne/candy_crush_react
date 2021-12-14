@@ -1,16 +1,40 @@
 .app {
-  display: flex;
-  padding: 30px;
+    /*display: flex;*/
+    padding: 30px;
+
+}
+
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .game {
-  width: 576px;
-  height: 576px;
-  display: flex;
-  flex-wrap: wrap;
+    width: 496px;
+    height: 496px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .game img {
-  width: 70px;
-  height: 70px;
+    width: 60px;
+    height: 60px;
+}
+
+h2 {
+    margin: 0;
+}
+
+body {
+    background-color: slategrey;
+    background-image: url("images/bg.jpeg");
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+Footer {
+    justify-content: left;
+
 }
